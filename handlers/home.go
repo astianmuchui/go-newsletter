@@ -25,9 +25,9 @@ func HomeHandler(c *fiber.Ctx) error {
 		sess.Save()
 	}
 
-	if sess.Get("success") != nil {
-		success = sess.Get("success").(string)
-		sess.Delete("success")
+	if sess.Get("mail_success") != nil {
+		success = sess.Get("mail_success").(string)
+		sess.Delete("mail_success")
 		sess.Save()
 	}
 
@@ -59,9 +59,10 @@ func SendHandler(c *fiber.Ctx) error {
 		sess.Save()
 	}
 
+
 	return c.Render("send_message", fiber.Map{
 		"errors":       errors,
-		"mail_success": mailSuccess,
+		"success": mailSuccess,
 	})
 }
 
@@ -99,17 +100,29 @@ func SubscribeHandler(c *fiber.Ctx) error {
 }
 
 func SendEmailHandler(c *fiber.Ctx) error {
-	payload := new(Message)
-	sess, _ := Store.Get(c)
+    payload := new(Message)
+    sess, err := Store.Get(c)
+    if err != nil {
+        log.Error("Failed to get session:", err)
+        return c.Status(fiber.StatusInternalServerError).SendString("Failed to initialize session")
+    }
 
-	if err := c.BodyParser(payload); err != nil {
-		log.Error(err)
-		return err
-	} else {
-		services.SendEmails(payload.Subject, payload.Message, c)
-		sess.Set("feedback", "Emails being sent")
-		sess.Save()
-		return c.Redirect("/send")
+    if err := c.BodyParser(payload); err != nil {
+        log.Error("Failed to parse payload:", err)
+        return c.Status(fiber.StatusBadRequest).SendString("Invalid request payload")
+    }
 
-	}
+    sess.Set("feedback", "Emails being sent")
+    if err := sess.Save(); err != nil {
+        log.Error("Failed to save session:", err)
+        return c.Status(fiber.StatusInternalServerError).SendString("Failed to save session")
+    }
+
+    go func(subject, message string) {
+        if err := services.SendEmails(subject, message); err != nil {
+            log.Error("Failed to send emails:", err)
+        }
+    }(payload.Subject, payload.Message)
+
+    return c.Redirect("/send")
 }

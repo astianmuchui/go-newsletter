@@ -5,11 +5,11 @@
 
     <h2 class="text-2xl font-semibold text-center text-blue-500 mb-6">Send a Message</h2>
     {% if errors %}
-        {% for error in errors %}
-        <div class="mb-4 text-red-500 text-xs font-medium break-words">
-            {{ error }}
-        </div>
-        {% endfor %}
+    {% for error in errors %}
+    <div class="mb-4 text-red-500 text-xs font-medium break-words">
+        {{ error }}
+    </div>
+    {% endfor %}
     {% endif %}
     {% if success %}
     <div class="mb-4 text-green-500 text-xs font-medium">
