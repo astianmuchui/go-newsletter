@@ -1,0 +1,69 @@
+{% extends "./layout/base.django" %}
+
+{% block body %}
+<main class="container mx-auto p-4">
+    <form class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" action="/subscribe" method="post">
+        {% if error %}
+        <div class="bg-red-500 text-white p-2 mb-4 rounded">
+            {{ error }}
+        </div>
+        {% endif %}
+        {% if success %}
+        <div class="bg-green-500 text-white p-2 mb-4 rounded">
+            {{ success }}
+        </div>
+        {% endif %}
+        <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="name">
+                Name
+            </label>
+            <input
+                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                id="name" type="text" placeholder="Enter your name" name="name">
+        </div>
+        <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="email">
+                Email
+            </label>
+            <input
+                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                id="email" type="email" placeholder="Enter your email" name="email">
+        </div>
+        <div class="flex items-center justify-between">
+            <button
+                class="bg-blue-500 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                type="submit">
+                Subscribe
+            </button>
+        </div>
+    </form>
+
+
+
+    <div class="container mx-auto mt-8" id="subs">
+        <h2 class="text-2xl font-bold mb-4 text-blue-500 ">Subscribers</h2>
+        <table class="min-w-full bg-white">
+            <thead>
+                <tr>
+                    <th class="py-2 px-4 border-b-2 border-gray-300 text-sm  text-left text-blue-500  leading-tight">
+                        Name</th>
+                    <th class="py-2 px-4 border-b-2 border-gray-300 text-sm  text-left text-blue-500  leading-tight">
+                        Email</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for subscriber in subscribers %}
+                <tr>
+                    <td class="py-2 px-4 border-b border-gray-300 text-sm text-gray-700">{{ subscriber.Name }}</td>
+                    <td class="py-2 px-4 border-b border-gray-300 text-sm text-gray-700">{{ subscriber.Email }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</main>
+
+
+
+
+{% endblock %}
